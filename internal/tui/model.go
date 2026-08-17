@@ -13,13 +13,20 @@ import (
 	"github.com/charmbracelet/lipgloss"
 )
 
-const banner = `      _ _       _ _
+const logo = `      _ _       _ _
   ___(_) |_ ___| | |
  / __| | __/ _ \ | |
 | (__| | ||  __/_|_|
- \___|_|\__\___(_|_)
+ \___|_|\__\___(_|_)`
+
+const bannerDivit = logo + `
 
 divit@qezta.com — type 'help' to get started, Ctrl+C to disconnect.`
+
+const bannerQezta = logo + `
+
+qezta.com — under active development. Type 'help' to get started,
+Ctrl+C to disconnect. Looking for Divit? ssh divit@qezta.com`
 
 var (
 	promptStyle = lipgloss.NewStyle().Foreground(lipgloss.Color("212")).Bold(true)
@@ -30,6 +37,7 @@ var (
 // Model is the bubbletea model driving one SSH session's terminal.
 type Model struct {
 	username string
+	identity identity
 	width    int
 	height   int
 
@@ -40,19 +48,27 @@ type Model struct {
 }
 
 // NewModel builds the initial state for a freshly connected session.
-// username is whatever the client passed to `ssh <username>@qezta.com`.
+// username is whatever the client passed to `ssh <username>@qezta.com`; it
+// picks which persona (identity) the session sees — see identityFor.
 func NewModel(username string, width, height int) Model {
 	if username == "" {
 		username = "guest"
 	}
+	id := identityFor(username)
 
 	ti := textinput.New()
 	ti.Prompt = prompt(username)
 	ti.Focus()
 	ti.CharLimit = 256
 
+	banner := bannerQezta
+	if id == identityDivit {
+		banner = bannerDivit
+	}
+
 	return Model{
 		username: username,
+		identity: id,
 		width:    width,
 		height:   height,
 		input:    ti,
@@ -127,7 +143,7 @@ func (m Model) runLine() Model {
 	}
 	m.histPos = len(m.history)
 
-	result := executeCommand(line)
+	result := executeCommand(m.identity, line)
 	switch {
 	case result.clear:
 		m.lines = nil
