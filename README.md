@@ -15,13 +15,20 @@ This mirrors the fake browser terminal on
 and
 [`terminal-commands.ts`](https://github.com/Qezta/divit/blob/main/src/lib/data/terminal-commands.ts)
 in [`Qezta/divit`](https://github.com/Qezta/divit)), but backed by a genuine
-SSH connection instead of a JS widget. Connect as any username — the server
-never grants a real shell, only a sandboxed [Bubble
-Tea](https://github.com/charmbracelet/bubbletea) TUI.
+SSH connection instead of a JS widget. The server never grants a real shell,
+only a sandboxed [Bubble Tea](https://github.com/charmbracelet/bubbletea)
+TUI — but which persona you land in depends on the username you connect as:
 
 ```sh
-ssh divit@qezta.com
+ssh divit@qezta.com   # Divit's personal portfolio
+ssh qezta@qezta.com   # generic Qezta org landing (any other username too)
 ```
+
+There's a single SSH listener on `qezta.com`, so identity is chosen by
+username rather than running a separate server per persona — see
+`identityFor` in [`internal/tui/commands.go`](./internal/tui/commands.go).
+Only `divit`/`div` get the personal identity; every other username (`hi`,
+`qezta`, `guest`, ...) falls back to the org identity.
 
 ## Stack
 
@@ -31,15 +38,20 @@ ssh divit@qezta.com
 
 ## Commands
 
-`help`, `about`, `projects [--ml|--infrastructure|--functional]`, `skills
-[--expert]`, `contact`, `experience`, `resume`, `clear`, `nix-build`,
-`cowsay <text>`.
+Shared: `clear`, `nix-build`, `cowsay <text>`.
+
+`divit`/`div` (personal): `help`, `about`, `projects
+[--ml|--infrastructure|--functional]`, `skills [--expert]`, `contact`,
+`experience`, `resume`.
+
+Anything else (org): `help`, `about`, `repos`, `contact`.
 
 ## Development
 
 ```sh
 go run .                        # serves on :23234 by default
-ssh -p 23234 divit@localhost    # connect from another terminal
+ssh -p 23234 divit@localhost    # personal identity
+ssh -p 23234 qezta@localhost    # org identity
 ```
 
 | Variable | Default | Purpose |
