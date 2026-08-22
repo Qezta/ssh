@@ -119,7 +119,12 @@ gofmt -l .       # format check
 
 ```sh
 nix develop      # devshell with go, gopls, golangci-lint
+nix build        # builds the server as `result/bin/ssh` (flake/packages.nix)
 ```
+
+`packages.default` is what `infra`'s `nixosModules.ssh-portfolio` module
+expects as `services.qezta.sshPortfolio.package` when deploying this to a
+host — see that module for the systemd unit wiring.
 
 ## Security
 
