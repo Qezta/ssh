@@ -79,4 +79,4 @@ see [SECURITY.md](./SECURITY.md) for what's in and out of scope.
 
 ## License
 
-MIT — see [LICENSE](./LICENSE).
+HONCL-1.0 — see [LICENSE](./LICENSE).
