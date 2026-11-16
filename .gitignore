@@ -21,3 +21,6 @@ ssh_host_*_key*
 
 ## tools
 *local.json
+
+## git worktrees kept inside the project directory
+.worktrees/
