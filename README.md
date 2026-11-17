@@ -1,13 +1,48 @@
-<div align="center">
-
-# ssh.qezta.com
-
-**`ssh divit@qezta.com`** — a real SSH server that drops you straight into a
-terminal portfolio, no real shell access involved.
+<div id="top">
+    <div align="center">
+        <img alt='An abstract image of a donut-like object' title='Qezta' height=250 width=250 src='https://qezta.com/qezta.gif' />
+        <h1 align='center'>ssh</h1>
+        <strong>ssh divit@qezta.com: SSH terminal portfolio mirroring divit.qezta.com, built on wish + Bubble Tea</strong>
+    </div>
 
 </div>
 
 ---
+
+<div align='center'>
+    <a href="https://github.com/Qezta/ssh/stargazers">
+        <img src="https://img.shields.io/github/stars/Qezta/ssh?&style=for-the-badge&logoColor=white&color=purple&logo=starship" alt="stars"/>
+    </a>
+    <a href="https://github.com/Qezta/ssh/">
+        <img src="https://img.shields.io/github/repo-size/Qezta/ssh?&style=for-the-badge&logoColor=white&color=purple&logo=github" alt="size"/>
+    </a>
+    <a href="https://github.com/Qezta/ssh/blob/main/LICENSE">
+        <img src="https://img.shields.io/github/license/Qezta/ssh?&style=for-the-badge&logoColor=white&color=purple&logo=unlicense" alt="license"/>
+    </a>
+    <a href="https://github.com/nixos/nixpkgs">
+        <img src="https://img.shields.io/badge/Nixpkgs-unstable-blue.svg?style=for-the-badge&logo=NixOS&logoColor=white&color=purple" alt="nixpkgs"/>
+    </a>
+    <img src="https://img.shields.io/github/languages/top/Qezta/ssh?style=for-the-badge&color=purple" alt="repo-top-language"/>
+</div>
+
+---
+
+## Contents
+
+- [Overview](#overview)
+- [Stack](#stack)
+- [Commands](#commands)
+- [Development](#development)
+- [Nix](#nix)
+- [Security](#security)
+- [License](#license)
+
+---
+
+## Overview
+
+**`ssh divit@qezta.com`** — a real SSH server that drops you straight into a
+terminal portfolio, no real shell access involved.
 
 This mirrors the fake browser terminal on
 [divit.qezta.com](https://divit.qezta.com) (see
@@ -80,3 +115,11 @@ see [SECURITY.md](./SECURITY.md) for what's in and out of scope.
 ## License
 
 MIT — see [LICENSE](./LICENSE).
+
+<div align="right">
+
+[![][back-to-top]](#top)
+
+</div>
+
+[back-to-top]: https://img.shields.io/badge/-BACK_TO_TOP-151515?style=flat-square&color=purple
