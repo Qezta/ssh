@@ -30,6 +30,7 @@
 ## Contents
 
 - [Overview](#overview)
+- [How it works](#how-it-works)
 - [Stack](#stack)
 - [Commands](#commands)
 - [Development](#development)
@@ -64,6 +65,19 @@ username rather than running a separate server per persona — see
 `identityFor` in [`internal/tui/commands.go`](./internal/tui/commands.go).
 Only `divit`/`div` get the personal identity; every other username (`hi`,
 `qezta`, `guest`, ...) falls back to the org identity.
+
+## How it works
+
+```mermaid
+flowchart LR
+  client["ssh &lt;user&gt;@qezta.com"] --> wish["wish SSH server"]
+  wish --> mw["middleware<br/>Bubble Tea · logging"]
+  mw --> id{"identityFor(user)"}
+  id -- "divit / div" --> me["personal portfolio TUI"]
+  id -- "anything else" --> org["Qezta org TUI"]
+```
+
+No shell is ever started: every session is a Bubble Tea program.
 
 ## Stack
 
