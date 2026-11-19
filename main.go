@@ -83,6 +83,6 @@ func teaHandler(s gossh.Session) (tea.Model, []tea.ProgramOption) {
 		return nil, nil
 	}
 
-	m := tui.NewModel(s.User(), pty.Window.Width, pty.Window.Height)
+	m := tui.NewModel(s.User(), bm.MakeRenderer(s), pty.Window.Width, pty.Window.Height)
 	return m, []tea.ProgramOption{tea.WithAltScreen()}
 }
