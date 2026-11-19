@@ -12,15 +12,18 @@ import (
 	"net"
 	"os"
 	"os/signal"
+	"strings"
 	"syscall"
 	"time"
 
 	tea "github.com/charmbracelet/bubbletea"
+	"github.com/charmbracelet/lipgloss"
 	"github.com/charmbracelet/wish"
 	bm "github.com/charmbracelet/wish/bubbletea"
 	"github.com/charmbracelet/wish/logging"
 
 	gossh "github.com/charmbracelet/ssh"
+	"github.com/muesli/termenv"
 
 	"github.com/Qezta/ssh/internal/tui"
 )
@@ -88,6 +91,36 @@ func teaHandler(s gossh.Session) (tea.Model, []tea.ProgramOption) {
 		return nil, nil
 	}
 
-	m := tui.NewModel(s.User(), bm.MakeRenderer(s), pty.Window.Width, pty.Window.Height)
+	m := tui.NewModel(s.User(), sessionRenderer(s), pty.Window.Width, pty.Window.Height)
 	return m, []tea.ProgramOption{tea.WithAltScreen()}
+}
+
+// sessionRenderer picks the client's color profile from its TERM and
+// environment alone. wish's MakeRenderer also queries the terminal's
+// background color; when a client doesn't answer, the reader that query leaves
+// behind swallows the session's first keystrokes, and every connection waits
+// out its timeout. The TUI uses no adaptive colors, so it never needs the
+// answer.
+func sessionRenderer(s gossh.Session) *lipgloss.Renderer {
+	pty, _, _ := s.Pty()
+	env := sessionEnv(append(s.Environ(), "TERM="+pty.Term))
+	// WithUnsafe: the session is not a TTY on the server side, but the client
+	// asked for a PTY, so its environment describes a real terminal.
+	return lipgloss.NewRenderer(s, termenv.WithEnvironment(env), termenv.WithUnsafe(), termenv.WithColorCache(true))
+}
+
+// sessionEnv exposes the client's environment to termenv.
+type sessionEnv []string
+
+func (e sessionEnv) Environ() []string { return e }
+
+// Getenv returns the last value set for key, so the PTY's TERM, appended
+// after the client's own variables, wins.
+func (e sessionEnv) Getenv(key string) string {
+	for i := len(e) - 1; i >= 0; i-- {
+		if v, ok := strings.CutPrefix(e[i], key+"="); ok {
+			return v
+		}
+	}
+	return ""
 }
