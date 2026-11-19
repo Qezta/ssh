@@ -119,7 +119,18 @@ gofmt -l .       # format check
 
 ```sh
 nix develop      # devshell with go, gopls, golangci-lint
+nix build        # static server binary at result/bin/ssh
+nix build .#image  # Linux only: OCI image tarball (dockerTools)
 ```
+
+## Deployment
+
+`packages.<linux>.image` runs on the home-lab k3s cluster (host T3, see
+`hosts/nixos/T3/ssh-portfolio.nix` in `infra-nixCfg`). The image is preloaded
+into k3s from the Nix store, so no registry is involved. Its tag is the
+content hash, so every real change rolls out a new pod. It runs as UID 65532
+and reads or generates its host key at `/data/ssh_host_ed25519_key`, which
+lives on a persistent volume so clients' `known_hosts` entries stay valid.
 
 ## Security
 

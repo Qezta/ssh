@@ -28,16 +28,28 @@ const bannerQezta = logo + `
 qezta.com — under active development. Type 'help' to get started,
 Ctrl+C to disconnect. Looking for Divit? ssh divit@qezta.com`
 
-var (
-	promptStyle = lipgloss.NewStyle().Foreground(lipgloss.Color("212")).Bold(true)
-	errorStyle  = lipgloss.NewStyle().Foreground(lipgloss.Color("203"))
-	bannerStyle = lipgloss.NewStyle().Foreground(lipgloss.Color("117"))
-)
+// styles are built per session from that session's renderer: the package-level
+// lipgloss renderer probes the server's own stdout, which is not a TTY when
+// running as a daemon or in a container, so every color would be stripped.
+type styles struct {
+	prompt lipgloss.Style
+	err    lipgloss.Style
+	banner lipgloss.Style
+}
+
+func newStyles(r *lipgloss.Renderer) styles {
+	return styles{
+		prompt: r.NewStyle().Foreground(lipgloss.Color("212")).Bold(true),
+		err:    r.NewStyle().Foreground(lipgloss.Color("203")),
+		banner: r.NewStyle().Foreground(lipgloss.Color("117")),
+	}
+}
 
 // Model is the bubbletea model driving one SSH session's terminal.
 type Model struct {
 	username string
 	identity identity
+	styles   styles
 	width    int
 	height   int
 
@@ -50,14 +62,16 @@ type Model struct {
 // NewModel builds the initial state for a freshly connected session.
 // username is whatever the client passed to `ssh <username>@qezta.com`; it
 // picks which persona (identity) the session sees — see identityFor.
-func NewModel(username string, width, height int) Model {
+// renderer should come from the SSH session so colors match the client.
+func NewModel(username string, renderer *lipgloss.Renderer, width, height int) Model {
 	if username == "" {
 		username = "guest"
 	}
 	id := identityFor(username)
+	st := newStyles(renderer)
 
 	ti := textinput.New()
-	ti.Prompt = prompt(username)
+	ti.Prompt = st.prompt.Render(fmt.Sprintf("%s@qezta:~$ ", username))
 	ti.Focus()
 	ti.CharLimit = 256
 
@@ -69,15 +83,12 @@ func NewModel(username string, width, height int) Model {
 	return Model{
 		username: username,
 		identity: id,
+		styles:   st,
 		width:    width,
 		height:   height,
 		input:    ti,
-		lines:    []string{bannerStyle.Render(banner), ""},
+		lines:    []string{st.banner.Render(banner), ""},
 	}
-}
-
-func prompt(username string) string {
-	return promptStyle.Render(fmt.Sprintf("%s@qezta:~$ ", username))
 }
 
 func (m Model) Init() tea.Cmd {
@@ -148,7 +159,7 @@ func (m Model) runLine() Model {
 	case result.clear:
 		m.lines = nil
 	case result.isError:
-		m.lines = append(m.lines, errorStyle.Render(result.output), "")
+		m.lines = append(m.lines, m.styles.err.Render(result.output), "")
 	case result.output != "":
 		m.lines = append(m.lines, result.output, "")
 	default:

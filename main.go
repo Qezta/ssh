@@ -33,6 +33,11 @@ func main() {
 	s, err := wish.NewServer(
 		wish.WithAddress(net.JoinHostPort(host, port)),
 		wish.WithHostKeyPath(hostKeyPath),
+		// Anyone on the internet can connect, so cap how long a session may
+		// hold resources: idle tabs and abandoned connections must not
+		// accumulate until the pod hits its memory limit.
+		wish.WithIdleTimeout(15*time.Minute),
+		wish.WithMaxTimeout(2*time.Hour),
 		// This is a public novelty terminal, not real shell access: accept
 		// every username/key/password combination rather than gating auth.
 		wish.WithPublicKeyAuth(func(ctx gossh.Context, key gossh.PublicKey) bool {
@@ -83,6 +88,6 @@ func teaHandler(s gossh.Session) (tea.Model, []tea.ProgramOption) {
 		return nil, nil
 	}
 
-	m := tui.NewModel(s.User(), pty.Window.Width, pty.Window.Height)
+	m := tui.NewModel(s.User(), bm.MakeRenderer(s), pty.Window.Width, pty.Window.Height)
 	return m, []tea.ProgramOption{tea.WithAltScreen()}
 }
