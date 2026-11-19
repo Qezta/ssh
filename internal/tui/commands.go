@@ -86,10 +86,10 @@ type orgRepo struct {
 
 var orgRepos = []orgRepo{
 	{"divit", "divit.qezta.com — personal portfolio w/ Gemini-powered RAG chatbot"},
-	{"qezta-website", "Personal site + Qezta company site development base"},
 	{"site", "qezta.com — marketing site for Qezta (under development)"},
 	{"ui", "Shared Svelte component library & design system"},
-	{"infra", "Cloudflare DNS/domain management (Terranix)"},
+	{"infra", "GitHub org, repositories and DNS as code (OpenTofu)"},
+	{"company-framework", "Describe a company in typed Nix; export standard formats"},
 	{"ssh", "This terminal — ssh divit@qezta.com or ssh qezta@qezta.com"},
 }
 
@@ -367,7 +367,7 @@ Type 'repos' to see what's public under github.com/Qezta.`}
 					if i > 0 {
 						b.WriteString("\n")
 					}
-					b.WriteString(fmt.Sprintf("%-16s %s", r.name, r.desc))
+					b.WriteString(fmt.Sprintf("%-18s %s", r.name, r.desc))
 				}
 				return commandResult{output: fmt.Sprintf("Qezta Repositories:\n\n%s\n\nAll public: github.com/Qezta", b.String())}
 			},
