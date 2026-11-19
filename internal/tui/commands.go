@@ -293,7 +293,7 @@ Level: ███████████░░░ Expert`}
 			execute: func(_ []string) commandResult {
 				return commandResult{output: `Contact Information:
 
-Email:        divitmittal@outlook.in
+Email:        divit@qezta.com
 GitHub:       github.com/DivitMittal
 LinkedIn:     linkedin.com/in/divit-mittal
 HuggingFace:  huggingface.co/divitmittal
@@ -378,6 +378,9 @@ Type 'repos' to see what's public under github.com/Qezta.`}
 				return commandResult{output: `Contact:
 
 GitHub Org:  github.com/Qezta
+General:     hello@qezta.com
+Privacy:     privacy@qezta.com
+Legal:       legal@qezta.com
 Security:    security@qezta.com
 Personal:    ssh divit@qezta.com (or divit.qezta.com)`}
 			},
