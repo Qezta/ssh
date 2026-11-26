@@ -33,16 +33,15 @@ const (
 	identityQezta
 )
 
-// identityFor maps a connecting username to a persona. Only "divit" (and
-// the shorthand "div") get the personal portfolio; every other username
-// falls back to the org identity, so callers don't need to guess a single
-// "correct" alias like qezta/hi/hello/guest.
+// identityFor maps a connecting username to a persona. Only "hi" and
+// "hello" get the Qezta org landing. Every other username (divit, div,
+// qezta, guest, ...) gets Divit's personal portfolio.
 func identityFor(username string) identity {
 	switch strings.ToLower(strings.TrimSpace(username)) {
-	case "divit", "div":
-		return identityDivit
-	default:
+	case "hi", "hello":
 		return identityQezta
+	default:
+		return identityDivit
 	}
 }
 
