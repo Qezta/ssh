@@ -102,7 +102,7 @@ func (m Model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 		return m, nil
 
 	case tea.KeyPressMsg:
-		switch msg.String() {
+		switch msg.Keystroke() {
 		case "ctrl+c", "esc":
 			return m, tea.Quit
 
