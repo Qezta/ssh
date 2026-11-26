@@ -1,6 +1,8 @@
 <div id="top">
     <div align="center">
-        <img alt='An abstract image of a donut-like object' title='Qezta' height=250 width=250 src='https://qezta.com/qezta.gif' />
+        <img alt='An abstract image of a donut-like object' title='Qezta' height=250 width=250 src='https://qezta.com/qezta.gif' /><sup>™</sup>
+        <p>The Qezta torus logo, including its animated version, is a trademark of Qezta (OPC) Pvt. Ltd.</p>
+        <p>© 2025–2026 Qezta (OPC) Pvt. Ltd. All rights reserved.</p>
         <h1 align='center'>ssh</h1>
         <strong>ssh divit@qezta.com: SSH terminal portfolio mirroring divit.qezta.com, built on wish + Bubble Tea</strong>
     </div>
