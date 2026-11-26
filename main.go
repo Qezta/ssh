@@ -1,8 +1,8 @@
 // Command ssh runs the SSH server behind `ssh divit@qezta.com`.
 //
-// It never grants a real shell: every connection — any username, any key or
-// password — is dropped straight into a sandboxed Bubble Tea TUI (see
-// internal/tui) that mirrors the fake terminal on divit.qezta.com.
+// It never grants a real shell. divit@/div@ and hi@/hello@ get a sandboxed
+// Bubble Tea TUI (see internal/tui); any other username gets a short guide
+// to those entry points and is disconnected.
 package main
 
 import (
@@ -85,6 +85,12 @@ func envOr(key, fallback string) string {
 }
 
 func teaHandler(s gossh.Session) (tea.Model, []tea.ProgramOption) {
+	if guide := tui.Guide(s.User()); guide != "" {
+		wish.Println(s, strings.ReplaceAll(guide, "\n", "\r\n"))
+		_ = s.Exit(0)
+		return nil, nil
+	}
+
 	pty, _, active := s.Pty()
 	if !active {
 		wish.Fatalln(s, "no active terminal, skipping")
