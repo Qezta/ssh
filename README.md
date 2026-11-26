@@ -56,15 +56,16 @@ only a sandboxed [Bubble Tea](https://github.com/charmbracelet/bubbletea)
 TUI — but which persona you land in depends on the username you connect as:
 
 ```sh
-ssh divit@qezta.com   # Divit's personal portfolio
-ssh qezta@qezta.com   # generic Qezta org landing (any other username too)
+ssh divit@qezta.com   # Divit's personal portfolio (div@ works too)
+ssh hi@qezta.com      # Qezta org landing (hello@ works too)
 ```
 
 There's a single SSH listener on `qezta.com`, so identity is chosen by
 username rather than running a separate server per persona — see
 `identityFor` in [`internal/tui/commands.go`](./internal/tui/commands.go).
-Only `divit`/`div` get the personal identity; every other username (`hi`,
-`qezta`, `guest`, ...) falls back to the org identity.
+`divit`/`div` get the personal identity and `hi`/`hello` get the org
+identity. Any other username (`qezta`, `guest`, ...) gets a short guide
+pointing at those two and is disconnected.
 
 ## How it works
 
@@ -100,7 +101,7 @@ Anything else (org): `help`, `about`, `repos`, `contact`.
 ```sh
 go run .                        # serves on :23234 by default
 ssh -p 23234 divit@localhost    # personal identity
-ssh -p 23234 qezta@localhost    # org identity
+ssh -p 23234 hi@localhost       # org identity
 ```
 
 | Variable | Default | Purpose |

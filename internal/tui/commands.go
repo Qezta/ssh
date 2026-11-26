@@ -28,21 +28,39 @@ type identity int
 const (
 	// identityDivit is Divit's personal portfolio — `ssh divit@qezta.com`.
 	identityDivit identity = iota
-	// identityQezta is the generic org/company landing — anything else,
-	// e.g. `ssh qezta@qezta.com` or `ssh hi@qezta.com`.
+	// identityQezta is the org/company landing: `ssh hi@qezta.com` or
+	// `ssh hello@qezta.com`.
 	identityQezta
+	// identityUnknown is any other username. Those sessions only get a
+	// short guide (see Guide) pointing at the real entry points.
+	identityUnknown
 )
 
-// identityFor maps a connecting username to a persona. Only "divit" (and
-// the shorthand "div") get the personal portfolio; every other username
-// falls back to the org identity, so callers don't need to guess a single
-// "correct" alias like qezta/hi/hello/guest.
+// Guide returns the message shown to a username that doesn't map to a
+// persona, or "" if the username is recognised.
+func Guide(username string) string {
+	if identityFor(username) != identityUnknown {
+		return ""
+	}
+	return fmt.Sprintf(`Hi %s, there's nothing at that username.
+
+Try one of these:
+  ssh divit@qezta.com   Divit's personal portfolio
+  ssh hi@qezta.com      Qezta org landing
+`, username)
+}
+
+// identityFor maps a connecting username to a persona. "divit"/"div" get
+// the personal portfolio, "hi"/"hello" get the Qezta org landing, and
+// anything else is identityUnknown.
 func identityFor(username string) identity {
 	switch strings.ToLower(strings.TrimSpace(username)) {
 	case "divit", "div":
 		return identityDivit
-	default:
+	case "hi", "hello":
 		return identityQezta
+	default:
+		return identityUnknown
 	}
 }
 
