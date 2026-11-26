@@ -57,7 +57,7 @@ TUI — but which persona you land in depends on the username you connect as:
 
 ```sh
 ssh divit@qezta.com   # Divit's personal portfolio
-ssh qezta@qezta.com   # generic Qezta org landing (any other username too)
+ssh hi@qezta.com      # generic Qezta org landing (any other username too)
 ```
 
 There's a single SSH listener on `qezta.com`, so identity is chosen by
@@ -100,7 +100,7 @@ Anything else (org): `help`, `about`, `repos`, `contact`.
 ```sh
 go run .                        # serves on :23234 by default
 ssh -p 23234 divit@localhost    # personal identity
-ssh -p 23234 qezta@localhost    # org identity
+ssh -p 23234 hi@localhost       # org identity
 ```
 
 | Variable | Default | Purpose |
