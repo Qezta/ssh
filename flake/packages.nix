@@ -11,7 +11,7 @@ _: {
           pname = "qezta-ssh";
           version = "0.0.0";
           src = ../.;
-          vendorHash = "sha256-pvL5gCP0bnLk6r4Hs7ryC8VA4DqsLvc9B5bnysHKOOw=";
+          vendorHash = "sha256-lm7nsYoMHW90do6GMeCi/y16Qgt3HW/P22Mf/vlkN0E=";
           # Static binary: the image then needs no libc in its closure.
           env.CGO_ENABLED = "0";
           meta.mainProgram = "ssh";

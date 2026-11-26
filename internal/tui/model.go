@@ -8,9 +8,9 @@ import (
 	"fmt"
 	"strings"
 
-	"github.com/charmbracelet/bubbles/textinput"
-	tea "github.com/charmbracelet/bubbletea"
-	"github.com/charmbracelet/lipgloss"
+	"charm.land/bubbles/v2/textinput"
+	tea "charm.land/bubbletea/v2"
+	"charm.land/lipgloss/v2"
 )
 
 const logo = `      _ _       _ _
@@ -28,20 +28,20 @@ const bannerQezta = logo + `
 qezta.com — under active development. Type 'help' to get started,
 Ctrl+C to disconnect. Looking for Divit? ssh divit@qezta.com`
 
-// styles are built per session from that session's renderer: the package-level
-// lipgloss renderer probes the server's own stdout, which is not a TTY when
-// running as a daemon or in a container, so every color would be stripped.
+// styles are plain lipgloss v2 styles. Downsampling to the client's color
+// profile happens in the tea.Program (see tea.WithColorProfile in main.go),
+// so nothing here depends on the server's own stdout.
 type styles struct {
 	prompt lipgloss.Style
 	err    lipgloss.Style
 	banner lipgloss.Style
 }
 
-func newStyles(r *lipgloss.Renderer) styles {
+func newStyles() styles {
 	return styles{
-		prompt: r.NewStyle().Foreground(lipgloss.Color("212")).Bold(true),
-		err:    r.NewStyle().Foreground(lipgloss.Color("203")),
-		banner: r.NewStyle().Foreground(lipgloss.Color("117")),
+		prompt: lipgloss.NewStyle().Foreground(lipgloss.Color("212")).Bold(true),
+		err:    lipgloss.NewStyle().Foreground(lipgloss.Color("203")),
+		banner: lipgloss.NewStyle().Foreground(lipgloss.Color("117")),
 	}
 }
 
@@ -62,13 +62,12 @@ type Model struct {
 // NewModel builds the initial state for a freshly connected session.
 // username is whatever the client passed to `ssh <username>@qezta.com`; it
 // picks which persona (identity) the session sees — see identityFor.
-// renderer should come from the SSH session so colors match the client.
-func NewModel(username string, renderer *lipgloss.Renderer, width, height int) Model {
+func NewModel(username string, width, height int) Model {
 	if username == "" {
 		username = "guest"
 	}
 	id := identityFor(username)
-	st := newStyles(renderer)
+	st := newStyles()
 
 	ti := textinput.New()
 	ti.Prompt = st.prompt.Render(fmt.Sprintf("%s@qezta:~$ ", username))
@@ -99,22 +98,22 @@ func (m Model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 	switch msg := msg.(type) {
 	case tea.WindowSizeMsg:
 		m.width, m.height = msg.Width, msg.Height
-		m.input.Width = m.width - lipgloss.Width(m.input.Prompt) - 1
+		m.input.SetWidth(m.width - lipgloss.Width(m.input.Prompt) - 1)
 		return m, nil
 
-	case tea.KeyMsg:
-		switch msg.Type {
-		case tea.KeyCtrlC, tea.KeyEsc:
+	case tea.KeyPressMsg:
+		switch msg.Keystroke() {
+		case "ctrl+c", "esc":
 			return m, tea.Quit
 
-		case tea.KeyEnter:
+		case "enter":
 			return m.runLine(), nil
 
-		case tea.KeyUp:
+		case "up":
 			m.recallHistory(-1)
 			return m, nil
 
-		case tea.KeyDown:
+		case "down":
 			m.recallHistory(1)
 			return m, nil
 		}
@@ -169,7 +168,7 @@ func (m Model) runLine() Model {
 	return m
 }
 
-func (m Model) View() string {
+func (m Model) View() tea.View {
 	var b strings.Builder
 
 	visible := m.lines
@@ -186,5 +185,7 @@ func (m Model) View() string {
 	}
 	b.WriteString(m.input.View())
 
-	return b.String()
+	v := tea.NewView(b.String())
+	v.AltScreen = true
+	return v
 }
